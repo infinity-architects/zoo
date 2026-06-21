@@ -4,9 +4,9 @@ export default defineConfig({
   base: '/zoo/',
   title: 'ZOO',
   description: '运算器开发技术文档',
-
+  
   head: [
-    ['link', { rel: 'icon', type: 'image/jpeg', href: '/zoo/logo.jpg' }]
+    ['link', { rel: 'icon', type: 'image/jpeg', href: '/zoo/logo.jpg?v=4' }]
   ],
 
   // 主题相关设置
