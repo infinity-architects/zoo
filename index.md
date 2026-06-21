@@ -4,8 +4,8 @@ layout: home
 
 hero:
   name: "ZOO"
-  text: "Grasshopper开发文档"
-  tagline: My great project tagline
+  text: "技术文档"
+  tagline: 来自中文开源社区
   actions:
     - theme: brand
       text: Markdown Examples

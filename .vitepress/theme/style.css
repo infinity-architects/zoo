@@ -1,0 +1,20 @@
+:root {
+  --zoo-hero-gradient: linear-gradient(
+    120deg,
+    #ff6ec7 0%,
+    #7c3aed 35%,
+    #3b82f6 70%,
+    #22d3ee 100%
+  );
+
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: var(--zoo-hero-gradient);
+}
+
+.VPHero .name,
+.VPHero .text {
+  background: var(--zoo-hero-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
