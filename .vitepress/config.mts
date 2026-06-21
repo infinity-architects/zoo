@@ -3,7 +3,10 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   base: '/zoo/',
   title: 'ZOO',
-  description: 'A VitePress Site',
+  description: '运算器开发技术文档',
+
+
+  // 主题相关设置
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
@@ -20,6 +23,18 @@ export default defineConfig({
     ],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/infinity-architects/zoo' }
-    ]
+    ],
+
+    footer: {
+      message: 'Powered by Vitepress.',
+      copyright: 'Copyright © <a href="https://8-infinity.com" target="_blank" rel="noopener noreferrer">Infinity Architects</a>'
+    }
+
   }
+
+
+
+
+
+
 })
