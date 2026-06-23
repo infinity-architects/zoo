@@ -25,7 +25,8 @@ export default defineConfig({
         items: [
           { text: 'Markdown Examples', link: '/markdown-examples' },
           { text: 'Runtime API Examples', link: '/api-examples' },
-          { text: 'Echarts', link: '/you' }
+          { text: 'Echarts', link: '/you' },
+          { text: 'Race', link: '/fangyuan' }
 
         ]
       }

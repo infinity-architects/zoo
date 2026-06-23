@@ -8,8 +8,8 @@ hero:
   tagline: 来自中文开源社区
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: Housing Race
+      link: /fangyuan
     - theme: alt
       text: API Examples
       link: /api-examples
