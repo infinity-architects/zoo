@@ -8,6 +8,8 @@ const errorMsg = ref('')
 
 let chart = null
 let timer = null
+let frames = []
+let currentIndex = 0
 
 const selectedCities = [
   '上海', '北京', '深圳', '广州', '杭州', '南京',
@@ -27,6 +29,12 @@ const cityColorMap = {
   重庆: '#5F6B74',
   郑州: '#8B8F99',
   西安: '#A06A6A'
+}
+
+function formatShortNumber(value) {
+  const num = Number(value)
+  if (num >= 10000) return `${Math.round(num / 1000)}k`
+  return `${num}`
 }
 
 function buildMonthlyFrames(source) {
@@ -68,82 +76,227 @@ function buildMonthlyFrames(source) {
         value: monthData[city] ?? 0
       }))
 
-      return {
-        month,
-        data
-      }
+      return { month, data }
     })
 }
 
-function renderFrame(frame) {
-  if (!chart) return
-
-  const sorted = [...frame.data]
+function getSortedData(frame) {
+  return [...frame.data]
     .sort((a, b) => a.value - b.value)
     .map(item => ({
       name: item.name,
       value: item.value,
       itemStyle: {
-        color: cityColorMap[item.name] || '#5470C6',
+        color: cityColorMap[item.name] || '#5B6C8F',
         borderRadius: [0, 6, 6, 0]
       }
     }))
+}
 
-  chart.setOption({
-    title: {
-      text: '城市在售房源竞赛',
-      subtext: frame.month,
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'item',
-      formatter: ({ name, value }) =>
-        `${name}<br/>在售房源：${Number(value).toLocaleString()}`
-    },
-    grid: {
-      left: 90,
-      right: 110,
-      top: 80,
-      bottom: 30
-    },
-    xAxis: {
-      type: 'value',
-      max: 'dataMax',
-      axisLabel: {
-        formatter: value => Number(value).toLocaleString()
-      }
-    },
-    yAxis: {
-      type: 'category',
-      inverse: true,
-      max: selectedCities.length - 1,
-      animationDuration: 300,
-      animationDurationUpdate: 300,
-      data: sorted.map(item => item.name)
-    },
-    series: [
-      {
-        type: 'bar',
-        name: '在售房源',
-        realtimeSort: true,
-        data: sorted,
-        label: {
+function buildOption(frame) {
+  const sorted = getSortedData(frame)
+
+  return {
+    baseOption: {
+      animationDuration: 0,
+      animationDurationUpdate: 1500,
+      animationEasing: 'linear',
+      animationEasingUpdate: 'linear',
+      title: {
+        text: '城市在售房源竞赛',
+        subtext: frame.month,
+        left: 'center',
+        top: 10,
+        textStyle: {
+          fontSize: 24,
+          fontWeight: 700,
+          color: '#2b2f36'
+        },
+        subtextStyle: {
+          fontSize: 14,
+          color: '#6b7280'
+        }
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: ({ name, value }) =>
+          `${name}<br/>在售房源：${Number(value).toLocaleString()}`
+      },
+      grid: {
+        left: 72,
+        right: 72,
+        top: 90,
+        bottom: 36,
+        containLabel: true
+      },
+      xAxis: {
+        type: 'value',
+        max: 'dataMax',
+        splitNumber: 5,
+        axisLine: {
+          show: false
+        },
+        axisTick: {
+          show: false
+        },
+        axisLabel: {
+          fontSize: 12,
+          color: '#6b7280',
+          margin: 10,
+          hideOverlap: true,
+          formatter: value => Number(value).toLocaleString()
+        },
+        splitLine: {
           show: true,
-          position: 'right',
-          valueAnimation: true,
-          formatter: ({ value }) => Number(value).toLocaleString()
+          lineStyle: {
+            color: '#e5e7eb'
+          }
+        }
+      },
+      yAxis: {
+        type: 'category',
+        inverse: true,
+        max: selectedCities.length - 1,
+        animationDuration: 300,
+        animationDurationUpdate: 300,
+        axisLine: {
+          show: false
+        },
+        axisTick: {
+          show: false
+        },
+        axisLabel: {
+          fontSize: 13,
+          color: '#374151',
+          margin: 14
+        },
+        data: sorted.map(item => item.name)
+      },
+      series: [
+        {
+          type: 'bar',
+          name: '在售房源',
+          realtimeSort: true,
+          barWidth: 26,
+          data: sorted,
+          label: {
+            show: true,
+            position: 'right',
+            distance: 8,
+            fontSize: 12,
+            color: '#2b2f36',
+            valueAnimation: true,
+            formatter: ({ value }) => Number(value).toLocaleString()
+          }
+        }
+      ]
+    },
+    media: [
+      {
+        query: {
+          maxWidth: 767
+        },
+        option: {
+          title: {
+            top: 8,
+            textStyle: {
+              fontSize: 18
+            },
+            subtextStyle: {
+              fontSize: 12
+            }
+          },
+          grid: {
+            left: 42,
+            right: 18,
+            top: 76,
+            bottom: 28,
+            containLabel: true
+          },
+          xAxis: {
+            splitNumber: 3,
+            axisLabel: {
+              fontSize: 10,
+              margin: 8,
+              hideOverlap: true,
+              formatter: value => formatShortNumber(value)
+            }
+          },
+          yAxis: {
+            axisLabel: {
+              fontSize: 11,
+              margin: 8
+            }
+          },
+          series: [
+            {
+              barWidth: 18,
+              label: {
+                fontSize: 10,
+                distance: 4,
+                formatter: ({ value }) => formatShortNumber(value)
+              }
+            }
+          ]
+        }
+      },
+      {
+        query: {
+          minWidth: 768,
+          maxWidth: 1023
+        },
+        option: {
+          title: {
+            textStyle: {
+              fontSize: 22
+            }
+          },
+          grid: {
+            left: 58,
+            right: 42,
+            top: 84,
+            bottom: 32,
+            containLabel: true
+          },
+          xAxis: {
+            splitNumber: 4,
+            axisLabel: {
+              fontSize: 11,
+              formatter: value => formatShortNumber(value)
+            }
+          },
+          yAxis: {
+            axisLabel: {
+              fontSize: 12,
+              margin: 10
+            }
+          },
+          series: [
+            {
+              barWidth: 22,
+              label: {
+                fontSize: 11,
+                formatter: ({ value }) => formatShortNumber(value)
+              }
+            }
+          ]
         }
       }
-    ],
-    animationDuration: 0,
-    animationDurationUpdate: 1500,
-    animationEasing: 'linear',
-    animationEasingUpdate: 'linear'
-  })
+    ]
+  }
+}
+
+function renderFrame(frame) {
+  if (!chart) return
+  chart.setOption(buildOption(frame), true)
 }
 
 function handleResize() {
-  if (chart) chart.resize()
+  if (!chart) return
+  chart.resize()
+  if (frames.length) {
+    renderFrame(frames[currentIndex])
+  }
 }
 
 onMounted(async () => {
@@ -154,7 +307,7 @@ onMounted(async () => {
       throw new Error('图表容器不存在')
     }
 
-    const frames = buildMonthlyFrames(rawData)
+    frames = buildMonthlyFrames(rawData)
 
     if (!frames.length) {
       throw new Error('JSON 已导入，但没有生成有效月份数据')
@@ -163,7 +316,6 @@ onMounted(async () => {
     chart = echarts.init(chartRef.value)
     renderFrame(frames[0])
 
-    let currentIndex = 0
     timer = setInterval(() => {
       currentIndex = (currentIndex + 1) % frames.length
       renderFrame(frames[currentIndex])
@@ -178,6 +330,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   if (timer) clearInterval(timer)
   window.removeEventListener('resize', handleResize)
+
   if (chart) {
     chart.dispose()
     chart = null
@@ -201,7 +354,17 @@ onBeforeUnmount(() => {
 
 .house-bar-race-chart {
   width: 100%;
-  height: 560px;
+  height: 62vh;
+  min-height: 540px;
+  max-height: 760px;
+}
+
+@media (max-width: 767px) {
+  .house-bar-race-chart {
+    height: 68vh;
+    min-height: 620px;
+    max-height: 760px;
+  }
 }
 
 .house-bar-race-error {
